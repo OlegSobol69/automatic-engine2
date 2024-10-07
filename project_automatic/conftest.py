@@ -52,4 +52,3 @@ def meme_id(create_meme_endpoint, delete_meme_endpoint, request):
     yield meme_id
     if "no_auto_delete" not in request.node.keywords:
         delete_meme_endpoint.delete(meme_id)
-

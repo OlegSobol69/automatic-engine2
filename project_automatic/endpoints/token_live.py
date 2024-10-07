@@ -4,7 +4,7 @@ from project_automatic.endpoints.authorize import GetUserToken
 
 
 class TokenLive(GetUserToken):
-    token = "eboKiFqb3trLVWg"
+    token = "bFjiVYrrKfZ5UNu"
 
     @allure.step('Token live')
     def token_live_endpoint(self):

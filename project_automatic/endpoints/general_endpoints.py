@@ -2,4 +2,4 @@ class Endpoint:
     url = "http://167.172.172.115:52355/meme"
     response = None
     headers = {'Content-Type': 'application/json',
-               'Authorization': 'eboKiFqb3trLVWg'}
+               'Authorization': 'bFjiVYrrKfZ5UNu'}

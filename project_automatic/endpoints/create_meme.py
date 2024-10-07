@@ -1,9 +1,11 @@
 import allure
 import requests
 from project_automatic.endpoints.general_endpoints import Endpoint
+from project_automatic.endpoints.delete_meme import DeleteMeme
 
 
 class CreateMeme(Endpoint):
+    meme_id = None
 
     @allure.step('Creating a new meme')
     def create(self):
@@ -18,10 +20,20 @@ class CreateMeme(Endpoint):
             }
         }
         self.response = requests.post(self.url, json=body, headers=self.headers)
+        response_data = self.response.json()
+        self.meme_id = response_data.get("id")
         return self.response
 
     @allure.step('Check response status is 200')
     def check_status_200(self):
         assert self.response.status_code == 200, f"Expected 200, but got {self.response.status_code}"
 
+    @allure.step('Get meme ID')
+    def get_meme_id(self):
+        return self.meme_id
 
+    @allure.step('Deleting created meme using DeleteMeme class')
+    def delete_meme(self):
+        deleter = DeleteMeme()
+        deleter.delete(self.meme_id)
+        deleter.check_status_200()

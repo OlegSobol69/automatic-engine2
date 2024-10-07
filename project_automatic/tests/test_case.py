@@ -6,6 +6,7 @@ import pytest
 def test_create_meme(create_meme_endpoint):
     create_meme_endpoint.create()
     create_meme_endpoint.check_status_200()
+    create_meme_endpoint.delete_meme()
 
 
 @pytest.mark.no_auto_delete
