@@ -6,12 +6,16 @@ class GetUserToken:
     url = "http://167.172.172.115:52355/authorize"
     headers = {'Content-Type': 'application/json'}
     response = None
+    token = None
 
     @allure.step('Get token')
     def authorize_endpoint(self):
         body = {
             "name": "usertest"
         }
+        self.response = requests.post(self.url, json=body, headers=self.headers)
+        response_data = self.response.json()
+        self.token = response_data.get("token")
         self.response = requests.post(self.url, json=body, headers=self.headers)
         return self.response
 

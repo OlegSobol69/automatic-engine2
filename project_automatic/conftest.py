@@ -9,28 +9,28 @@ from project_automatic.endpoints.token_live import TokenLive
 
 
 @pytest.fixture()
-def create_meme_endpoint():
-    return CreateMeme()
+def create_meme_endpoint(session_token):
+    return CreateMeme(session_token)
 
 
 @pytest.fixture()
-def update_meme_endpoint():
-    return UpdateMeme()
+def update_meme_endpoint(session_token):
+    return UpdateMeme(session_token)
 
 
 @pytest.fixture()
-def get_memes_endpoint():
-    return GetMemes()
+def get_memes_endpoint(session_token):
+    return GetMemes(session_token)
 
 
 @pytest.fixture()
-def get_meme_by_id_endpoint():
-    return GetMemeById()
+def get_meme_by_id_endpoint(session_token):
+    return GetMemeById(session_token)
 
 
 @pytest.fixture()
-def delete_meme_endpoint():
-    return DeleteMeme()
+def delete_meme_endpoint(session_token):
+    return DeleteMeme(session_token)
 
 
 @pytest.fixture()
@@ -52,3 +52,13 @@ def meme_id(create_meme_endpoint, delete_meme_endpoint, request):
     yield meme_id
     if "no_auto_delete" not in request.node.keywords:
         delete_meme_endpoint.delete(meme_id)
+
+
+@pytest.fixture(scope="session")
+def session_token():
+    user_token = GetUserToken()
+    response = user_token.authorize_endpoint()
+    user_token.check_status_200()
+    token_data = response.json()
+    token = token_data.get("token")
+    return token

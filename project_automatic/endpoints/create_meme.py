@@ -5,7 +5,11 @@ from project_automatic.endpoints.delete_meme import DeleteMeme
 
 
 class CreateMeme(Endpoint):
-    meme_id = None
+
+    def __init__(self, token):
+        super().__init__(token)
+        self.meme_id = None
+        self.token = token
 
     @allure.step('Creating a new meme')
     def create(self):
@@ -19,6 +23,7 @@ class CreateMeme(Endpoint):
                 "views": 100
             }
         }
+        print(f"Using token for create: {self.headers['Authorization']}")
         self.response = requests.post(self.url, json=body, headers=self.headers)
         response_data = self.response.json()
         self.meme_id = response_data.get("id")
@@ -34,6 +39,8 @@ class CreateMeme(Endpoint):
 
     @allure.step('Deleting created meme using DeleteMeme class')
     def delete_meme(self):
-        deleter = DeleteMeme()
+        deleter = DeleteMeme(self.token)
         deleter.delete(self.meme_id)
         deleter.check_status_200()
+        print(f"Using token for delete : {self.token}")
+

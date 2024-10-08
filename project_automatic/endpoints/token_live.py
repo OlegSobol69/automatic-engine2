@@ -4,10 +4,10 @@ from project_automatic.endpoints.authorize import GetUserToken
 
 
 class TokenLive(GetUserToken):
-    token = "bFjiVYrrKfZ5UNu"
 
     @allure.step('Token live')
     def token_live_endpoint(self):
+        self.authorize_endpoint()
         print(f"live token {self.token}")
         self.response = requests.get(f"{self.url}/{self.token}", headers=self.headers)
         return self.response

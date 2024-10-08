@@ -6,6 +6,9 @@ from project_automatic.endpoints.general_endpoints import Endpoint
 
 class GetMemeById(Endpoint):
 
+    def __init__(self, token):
+        super().__init__(token)
+
     @allure.step('Get meme by id')
     def get_meme_by_id(self, meme_id):
         print(f"Using token : {self.headers['Authorization']}")

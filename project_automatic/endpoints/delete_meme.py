@@ -5,6 +5,9 @@ from project_automatic.endpoints.general_endpoints import Endpoint
 
 class DeleteMeme(Endpoint):
 
+    def __init__(self, token):
+        super().__init__(token)
+
     @allure.step('Delete a new meme')
     def delete(self, meme_id):
         print(f"Using token : {self.headers['Authorization']}")
