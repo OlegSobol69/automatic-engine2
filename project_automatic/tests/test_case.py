@@ -5,8 +5,30 @@ import pytest
 @allure.feature('Create Meme')
 def test_create_meme(create_meme_endpoint):
     create_meme_endpoint.create()
+
     create_meme_endpoint.check_status_200()
+    create_meme_endpoint.check_response_has_id()
+    create_meme_endpoint.check_content_type()
+    create_meme_endpoint.check_field_types()
+    create_meme_endpoint.check_url_format()
+
     create_meme_endpoint.delete_meme()
+
+    create_meme_endpoint.create_without_token()
+    create_meme_endpoint.check_status_401()
+
+
+@pytest.mark.parametrize("invalid_body, field_name", [
+    ({"text": 12345, "url": "https://example.com", "tags": ["пример", "json"], "info": {"author": "Иван"}}, "text"),
+    ({"text": "test", "url": 67890, "tags": ["пример", "test"], "info": {"author": "Иван"}}, "url"),
+    ({"text": "test", "url": "https://example.com", "tags": "invalid_tags", "info": {"author": "Иван"}}, "tags"),
+    ({"text": "test", "url": "https://example.com", "tags": ["пример"], "info": "invalid_info"}, "info")
+])
+@allure.feature('Create Meme with invalid data')
+def test_create_meme_with_invalid_data(create_meme_endpoint, invalid_body, field_name):
+    create_meme_endpoint.create_with_custom_body(invalid_body)
+    create_meme_endpoint.check_status_400()
+    print(f"Checked invalid field: {field_name}")
 
 
 @pytest.mark.no_auto_delete
