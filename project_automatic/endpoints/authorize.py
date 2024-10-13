@@ -9,9 +9,9 @@ class GetUserToken:
     token = None
 
     @allure.step('Get token')
-    def authorize_endpoint(self):
+    def authorize_endpoint(self, user_name):
         body = {
-            "name": "usertest"
+            "name": user_name
         }
         self.response = requests.post(self.url, json=body, headers=self.headers)
         response_data = self.response.json()

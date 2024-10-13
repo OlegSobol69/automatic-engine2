@@ -7,7 +7,7 @@ class TokenLive(GetUserToken):
 
     @allure.step('Token live')
     def token_live_endpoint(self):
-        self.authorize_endpoint()
+        self.authorize_endpoint("user_1")
         print(f"live token {self.token}")
         self.response = requests.get(f"{self.url}/{self.token}", headers=self.headers)
         return self.response

@@ -57,7 +57,17 @@ def meme_id(create_meme_endpoint, delete_meme_endpoint, request):
 @pytest.fixture(scope="session")
 def session_token():
     user_token = GetUserToken()
-    response = user_token.authorize_endpoint()
+    response = user_token.authorize_endpoint("user_1")
+    user_token.check_status_200()
+    token_data = response.json()
+    token = token_data.get("token")
+    return token
+
+
+@pytest.fixture()
+def second_user_token():
+    user_token = GetUserToken()
+    response = user_token.authorize_endpoint("user_2")
     user_token.check_status_200()
     token_data = response.json()
     token = token_data.get("token")

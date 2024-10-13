@@ -36,6 +36,16 @@ def test_create_meme_with_invalid_data(create_meme_endpoint, invalid_body, field
 def test_delete_meme(meme_id, delete_meme_endpoint):
     delete_meme_endpoint.delete(meme_id)
     delete_meme_endpoint.check_status_200()
+    delete_meme_endpoint.check_successful_deletion_message(meme_id)
+    delete_meme_endpoint.check_status_404(meme_id)
+    delete_meme_endpoint.check_status_401_without_token(meme_id)
+    delete_meme_endpoint.check_status_400_invalid_id("invalid")
+
+
+# @pytest.mark.no_auto_delete
+@allure.feature('Delete Meme with another user token')
+def test_delete_meme_with_another_user_token(meme_id, delete_meme_endpoint, second_user_token):
+    delete_meme_endpoint.check_status_403_with_another_user_token(meme_id, second_user_token)
 
 
 @allure.feature('Get meme by id')
@@ -58,7 +68,7 @@ def test_update_meme(update_meme_endpoint, meme_id):
 
 @allure.feature('Authorize and get token')
 def test_get_token_user(authorize_user_endpoint):
-    authorize_user_endpoint.authorize_endpoint()
+    authorize_user_endpoint.authorize_endpoint("user_1")
     authorize_user_endpoint.check_status_200()
 
 
