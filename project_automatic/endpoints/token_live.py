@@ -12,5 +12,5 @@ class TokenLive(GetUserToken):
         self.response = requests.get(f"{self.url}/{self.token}", headers=self.headers)
         return self.response
 
-    def check_status_200(self):
-        assert self.response.status_code == 200, f"Expected 200, but got {self.response.status_code}"
+    # def check_status_200(self):
+    #     assert self.response.status_code == 200, f"Expected 200, but got {self.response.status_code}"

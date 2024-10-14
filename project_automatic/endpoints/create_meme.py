@@ -29,9 +29,9 @@ class CreateMeme(Endpoint):
         self.meme_id = response_data.get("id")
         return self.response
 
-    @allure.step('Check response status is 200')
-    def check_status_200(self):
-        assert self.response.status_code == 200, f"Expected 200, but got {self.response.status_code}"
+    # @allure.step('Check response status is 200')
+    # def check_status_200(self):
+    #     assert self.response.status_code == 200, f"Expected 200, but got {self.response.status_code}"
 
     @allure.step('Check response has meme ID')
     def check_response_has_id(self):

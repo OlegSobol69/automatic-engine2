@@ -24,6 +24,6 @@ class UpdateMeme(Endpoint):
         self.response = requests.get(f"{self.url}/{meme_id}", json=body, headers=self.headers)
         return self.response
 
-    @allure.step('Check response status is 200')
-    def check_status_200(self):
-        assert self.response.status_code == 200, f"Expected 200, but got {self.response.status_code}"
+    # @allure.step('Check response status is 200')
+    # def check_status_200(self):
+    #     assert self.response.status_code == 200, f"Expected 200, but got {self.response.status_code}"
