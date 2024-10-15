@@ -7,12 +7,14 @@ import pytest
 def test_create_meme(create_meme_endpoint):
     create_meme_endpoint.create()
     create_meme_endpoint.check_response_time()
-
+    create_meme_endpoint.check_response_is_not_empty()
     create_meme_endpoint.check_status_200()
+
     create_meme_endpoint.check_response_has_id()
     create_meme_endpoint.check_content_type()
     create_meme_endpoint.check_field_types()
     create_meme_endpoint.check_url_format()
+    create_meme_endpoint.check_response_has_mandatory_fields()
 
     create_meme_endpoint.delete_meme()
 
@@ -57,16 +59,31 @@ def test_delete_meme_with_another_user_token(meme_id, delete_meme_endpoint, seco
 def test_get_meme_by_id(meme_id, get_meme_by_id_endpoint):
     get_meme_by_id_endpoint.get_meme_by_id(meme_id)
     get_meme_by_id_endpoint.check_response_time()
-
     get_meme_by_id_endpoint.check_status_200()
+    get_meme_by_id_endpoint.check_response_is_not_empty()
+
+    get_meme_by_id_endpoint.check_field_types()
+    get_meme_by_id_endpoint.check_response_has_mandatory_fields()
+    get_meme_by_id_endpoint.check_meme_id_matches(meme_id)
+    get_meme_by_id_endpoint.check_status_404("0")
+    get_meme_by_id_endpoint.check_status_405(meme_id)
+    get_meme_by_id_endpoint.get_meme_by_id_without_token_status_401(meme_id)
 
 
 @allure.feature('Get all memes')
 def test_get_memes(get_memes_endpoint):
     get_memes_endpoint.get_all_memes()
     get_memes_endpoint.check_response_time()
-
+    get_memes_endpoint.check_response_is_not_empty()
     get_memes_endpoint.check_status_200()
+
+    get_memes_endpoint.check_response_structure()
+    get_memes_endpoint.check_each_meme_fields()
+    get_memes_endpoint.check_field_types_for_each_meme()
+    get_memes_endpoint.check_for_duplicate_memes()
+    get_memes_endpoint.check_memes_sorted_by_id()
+    get_memes_endpoint.get_memes_without_token_status_401()
+    get_memes_endpoint.get_memes_with_invalid_method_status_405()
 
 
 @allure.feature('Update Meme')

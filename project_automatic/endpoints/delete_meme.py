@@ -49,11 +49,3 @@ class DeleteMeme(Endpoint):
     def check_status_405_invalid_method(self, meme_id):
         response_405 = requests.post(f"{self.url}/{meme_id}", headers=self.headers)
         assert response_405.status_code == 405, f"Expected 405, but got {response_405.status_code}"
-
-    # @allure.step('Check that delete response time is within acceptable limits')
-    # def check_response_time(self, max_time_ms=300):
-    #     response_time = self.response.elapsed.total_seconds() * 1000
-    #     assert response_time <= max_time_ms, f"Response time {response_time} ms exceeded the limit of {max_time_ms} ms"
-    #
-    # def check_status_200(self):
-    #     assert self.response.status_code == 200, f"Expected 200, but got {self.response.status_code}"

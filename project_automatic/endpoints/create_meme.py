@@ -29,10 +29,6 @@ class CreateMeme(Endpoint):
         self.meme_id = response_data.get("id")
         return self.response
 
-    # @allure.step('Check response status is 200')
-    # def check_status_200(self):
-    #     assert self.response.status_code == 200, f"Expected 200, but got {self.response.status_code}"
-
     @allure.step('Check response has meme ID')
     def check_response_has_id(self):
         assert self.meme_id is not None, "Meme ID is missing in the response"
@@ -42,22 +38,12 @@ class CreateMeme(Endpoint):
         assert self.response.headers.get(
             'Content-Type') == 'application/json', "Expected content type 'application/json'"
 
-    @allure.step('Check response has correct field types')
-    def check_field_types(self):
-        response_data = self.response.json()
-        assert isinstance(response_data['text'], str), "Field 'text' should be of type string"
-        assert isinstance(response_data['url'], str), "Field 'url' should be of type string"
-        assert isinstance(response_data['tags'], list), "Field 'tags' should be of type array (list)"
-        assert isinstance(response_data['info'], dict), "Field 'info' should be of type object (dictionary)"
+
 
     @allure.step('Check URL format is valid')
     def check_url_format(self):
         response_data = self.response.json()
         assert response_data['url'].startswith('http'), "Field 'url' should start with 'http'"
-
-    # @allure.step('Get meme ID')
-    # def get_meme_id(self):
-    #     return self.meme_id
 
     @allure.step('Deleting created meme using DeleteMeme class')
     def delete_meme(self):
