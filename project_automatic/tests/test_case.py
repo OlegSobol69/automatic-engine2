@@ -1,6 +1,5 @@
 import allure
 import pytest
-# import pytest_check as check
 
 
 @allure.feature('Create Meme')
@@ -17,9 +16,7 @@ def test_create_meme(create_meme_endpoint):
     create_meme_endpoint.check_response_has_mandatory_fields()
 
     create_meme_endpoint.delete_meme()
-
-    create_meme_endpoint.create_without_token()
-    create_meme_endpoint.check_status_401()
+    create_meme_endpoint.create_without_token_check_status_401()
 
 
 @pytest.mark.parametrize("invalid_body, field_name", [
@@ -40,16 +37,15 @@ def test_create_meme_with_invalid_data(create_meme_endpoint, invalid_body, field
 def test_delete_meme(meme_id, delete_meme_endpoint):
     delete_meme_endpoint.delete(meme_id)
     delete_meme_endpoint.check_response_time()
-
     delete_meme_endpoint.check_status_200()
+
     delete_meme_endpoint.check_successful_deletion_message(meme_id)
     delete_meme_endpoint.check_status_405_invalid_method(meme_id)
     delete_meme_endpoint.check_status_404(meme_id)
     delete_meme_endpoint.check_status_401_without_token(meme_id)
-    # delete_meme_endpoint.check_status_400_invalid_id("invalid")
+    delete_meme_endpoint.check_status_400_invalid_id("invalid")
 
 
-# @pytest.mark.no_auto_delete
 @allure.feature('Delete Meme with auto delete')
 def test_delete_meme_with_another_user_token(meme_id, delete_meme_endpoint, second_user_token):
     delete_meme_endpoint.check_status_403_with_another_user_token(meme_id, second_user_token)
@@ -87,24 +83,38 @@ def test_get_memes(get_memes_endpoint):
 
 
 @allure.feature('Update Meme')
-def test_update_meme(update_meme_endpoint, meme_id):
+def test_update_meme(update_meme_endpoint, meme_id, second_user_token):
     update_meme_endpoint.update(meme_id)
     update_meme_endpoint.check_response_time()
-
+    update_meme_endpoint.check_response_is_not_empty()
     update_meme_endpoint.check_status_200()
+
+    update_meme_endpoint.check_field_types()
+    update_meme_endpoint.without_token_check_401(meme_id)
+    update_meme_endpoint.put_memes_with_invalid_method_status_405(meme_id)
+    update_meme_endpoint.check_status_403_with_another_user_token(meme_id, second_user_token)
+    update_meme_endpoint.check_empty_body_status_400(meme_id)
+    update_meme_endpoint.check_missing_fields_status_400(meme_id)
+    update_meme_endpoint.check_invalid_data_types_status_400(meme_id)
+    update_meme_endpoint.check_update_non_existent_meme_status_404()
+    update_meme_endpoint.check_text_length_limit_status_400(meme_id)
 
 
 @allure.feature('Authorize and get token')
 def test_get_token_user(authorize_user_endpoint):
     authorize_user_endpoint.authorize_endpoint("user_1")
     authorize_user_endpoint.check_response_time()
-
     authorize_user_endpoint.check_status_200()
+
+    authorize_user_endpoint.check_token_in_response()
+    authorize_user_endpoint.check_user_in_response("user_1")
 
 
 @allure.feature('Token live right now')
 def test_token_live(check_live_token_endpoint):
     check_live_token_endpoint.token_live_endpoint()
     check_live_token_endpoint.check_response_time()
-
     check_live_token_endpoint.check_status_200()
+
+    check_live_token_endpoint.token_live_endpoint()
+    check_live_token_endpoint.check_status_404_for_invalid_token()

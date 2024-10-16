@@ -23,7 +23,6 @@ class CreateMeme(Endpoint):
                 "views": 100
             }
         }
-        print(f"Using token for create: {self.headers['Authorization']}")
         self.response = requests.post(self.url, json=body, headers=self.headers)
         response_data = self.response.json()
         self.meme_id = response_data.get("id")
@@ -38,8 +37,6 @@ class CreateMeme(Endpoint):
         assert self.response.headers.get(
             'Content-Type') == 'application/json', "Expected content type 'application/json'"
 
-
-
     @allure.step('Check URL format is valid')
     def check_url_format(self):
         response_data = self.response.json()
@@ -53,20 +50,9 @@ class CreateMeme(Endpoint):
         print(f"Using token for delete : {self.token}")
 
     @allure.step('Creating a new meme without token (expecting 401)')
-    def create_without_token(self):
-        body = {
-          "text": "Это пример текста.",
-          "url": "https://example.com",
-          "tags": [],
-          "info": {
-          }
-        }
-        headers_without_token = {'Content-Type': 'application/json'}
-        self.response = requests.post(self.url, json=body, headers=headers_without_token)
-        return self.response
-
-    @allure.step('Check response status is 401 (Unauthorized)')
-    def check_status_401(self):
+    def create_without_token_check_status_401(self):
+        headers_without_token = {key: value for key, value in self.headers.items() if key != 'Authorization'}
+        self.response = requests.post(self.url, headers=headers_without_token)
         assert self.response.status_code == 401, f"Expected 401, but got {self.response.status_code}"
 
     @allure.step('Creating a new meme with custom body')

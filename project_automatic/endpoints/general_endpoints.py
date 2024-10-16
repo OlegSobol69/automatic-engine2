@@ -37,4 +37,4 @@ class Endpoint:
         assert isinstance(response_data['text'], str), "Field 'text' should be of type string"
         assert isinstance(response_data['url'], str), "Field 'url' should be of type string"
         assert isinstance(response_data['tags'], list), "Field 'tags' should be of type array (list)"
-        assert isinstance(response_data['info'], dict), "Field 'info' should be of type object (dictionary)"
+        assert isinstance(response_data['info'], dict), "Field 'info' should be of type object"

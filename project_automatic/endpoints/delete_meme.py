@@ -27,7 +27,6 @@ class DeleteMeme(Endpoint):
 
     @allure.step('Check status is 401 without token')
     def check_status_401_without_token(self, meme_id):
-        print(f"Attempting to delete meme {meme_id} without token")
         response_401 = requests.delete(f"{self.url}/{meme_id}")
         assert response_401.status_code == 401, f"Expected 401, but got {response_401.status_code}"
 

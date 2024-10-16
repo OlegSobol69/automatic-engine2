@@ -11,7 +11,6 @@ class GetMemeById(Endpoint):
 
     @allure.step('Get meme by id')
     def get_meme_by_id(self, meme_id):
-        print(f"Using token : {self.headers['Authorization']}")
         self.response = requests.get(f"{self.url}/{meme_id}", headers=self.headers)
         return self.response
 
@@ -37,4 +36,3 @@ class GetMemeById(Endpoint):
         headers_without_token = {key: value for key, value in self.headers.items() if key != 'Authorization'}
         self.response = requests.get(f"{self.url}/{meme_id}", headers=headers_without_token)
         assert self.response.status_code == 401, f"Expected 401, but got {self.response.status_code}"
-        return self.response

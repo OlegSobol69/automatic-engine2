@@ -27,3 +27,13 @@ class GetUserToken:
     def check_response_time(self, max_time_ms=300):
         response_time = self.response.elapsed.total_seconds() * 1000
         assert response_time <= max_time_ms, f"Response time {response_time} ms exceeded the limit of {max_time_ms} ms"
+
+    @allure.step('Check token is present in the response')
+    def check_token_in_response(self):
+        assert self.token is not None, "Token is missing from the response"
+
+    @allure.step('Check correct user is returned in the response')
+    def check_user_in_response(self, expected_user):
+        response_data = self.response.json()
+        user = response_data.get("user")
+        assert user == expected_user, f"Expected user '{expected_user}', but got '{user}'"
