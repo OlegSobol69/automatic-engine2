@@ -1,11 +1,11 @@
 import pytest
-from project_automatic.endpoints.create_meme import CreateMeme
-from project_automatic.endpoints.update_meme import UpdateMeme
-from project_automatic.endpoints.get_memes import GetMemes
-from project_automatic.endpoints.get_meme_by_id import GetMemeById
-from project_automatic.endpoints.delete_meme import DeleteMeme
-from project_automatic.endpoints.authorize import GetUserToken
-from project_automatic.endpoints.token_live import TokenLive
+from endpoints.create_meme import CreateMeme
+from endpoints.update_meme import UpdateMeme
+from endpoints.get_memes import GetMemes
+from endpoints.get_meme_by_id import GetMemeById
+from endpoints.delete_meme import DeleteMeme
+from endpoints.authorize import GetUserToken
+from endpoints.token_live import TokenLive
 
 
 @pytest.fixture()
@@ -45,7 +45,16 @@ def check_live_token_endpoint():
 
 @pytest.fixture()
 def meme_id(create_meme_endpoint, delete_meme_endpoint, request):
-    response = create_meme_endpoint.create()
+    body = {
+        "text": "пример текста для фикстуры",
+        "url": "https://example.com",
+        "tags": ["пример", "данные"],
+        "info": {
+            "author": "Иван Иваныч",
+            "date": "2024-10-01"
+        }
+    }
+    response = create_meme_endpoint.create(body)
     create_meme_endpoint.check_status_200()
     response_data = response.json()
     meme_id = response_data.get("id")
@@ -64,7 +73,7 @@ def session_token():
     return token
 
 
-@pytest.fixture()
+@pytest.fixture(scope="session")
 def second_user_token():
     user_token = GetUserToken()
     response = user_token.authorize_endpoint("user_2")
@@ -72,3 +81,14 @@ def second_user_token():
     token_data = response.json()
     token = token_data.get("token")
     return token
+
+
+@pytest.fixture()
+def del_meme(request):
+    yield
+    meme_id = getattr(request.node, 'meme_id', None)
+    if meme_id:
+        deleter = DeleteMeme(request.node.token)
+        deleter.delete(meme_id)
+        deleter.check_status_200()
+        print(f"Deleted meme with ID: {meme_id}")

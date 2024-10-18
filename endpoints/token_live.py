@@ -1,6 +1,6 @@
 import allure
 import requests
-from project_automatic.endpoints.authorize import GetUserToken
+from endpoints.authorize import GetUserToken
 
 
 class TokenLive(GetUserToken):

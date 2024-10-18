@@ -1,6 +1,6 @@
 import allure
 import requests
-from project_automatic.endpoints.general_endpoints import Endpoint
+from endpoints.general_endpoints import Endpoint
 
 
 class GetMemes(Endpoint):
