@@ -51,10 +51,6 @@ class GetMemes(Endpoint):
         meme_ids = [int(meme['id']) for meme in response_data['data']]
         assert meme_ids == sorted(meme_ids), "Memes are not sorted by id"
 
-    @allure.step('Get memes without token (expecting 401)')
-    def get_memes_without_token_status_401(self):
-        assert self.response.status_code == 401, f"Expected 401, but got {self.response.status_code}"
-
     @allure.step('Get memes with invalid method (expecting 405)')
     def get_memes_with_invalid_method_status_405(self):
         self.response = requests.put(self.url, headers=self.headers)

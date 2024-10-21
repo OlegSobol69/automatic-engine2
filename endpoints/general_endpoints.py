@@ -19,6 +19,18 @@ class Endpoint:
     def check_status_200(self):
         assert self.response.status_code == 200, f"Expected 200, but got {self.response.status_code}"
 
+    @allure.step('Check status is 401 without token')
+    def check_status_401_without_token(self):
+        assert self.response.status_code == 401, f"Expected 401, but got {self.response.status_code}"
+
+    @allure.step('Check response status is 400')
+    def check_status_400_bad_request(self):
+        assert self.response.status_code == 400, f"Expected 400, but got {self.response.status_code}"
+
+    @allure.step('Check status is 404 for already deleted meme')
+    def check_status_404(self):
+        assert self.response.status_code == 404, f"Expected 404, but got {self.response.status_code}"
+
     @allure.step('Check response is not empty')
     def check_response_is_not_empty(self):
         assert self.response.content, "Response content is empty"

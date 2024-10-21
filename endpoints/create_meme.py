@@ -35,11 +35,3 @@ class CreateMeme(Endpoint):
     def check_url_format(self):
         response_data = self.response.json()
         assert response_data['url'].startswith('http'), "Field 'url' should start with 'http'"
-
-    @allure.step('without token (expecting 401)')
-    def check_status_401(self):
-        assert self.response.status_code == 401, f"Expected 401, but got {self.response.status_code}"
-
-    @allure.step('Check response status is 400')
-    def check_status_400(self):
-        assert self.response.status_code == 400, f"Expected 400, but got {self.response.status_code}"
