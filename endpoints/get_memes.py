@@ -9,8 +9,9 @@ class GetMemes(Endpoint):
         super().__init__(token)
 
     @allure.step('Get memes')
-    def get_all_memes(self):
-        self.response = requests.get(self.url, headers=self.headers)
+    def get_all_memes(self, custom_headers=None):
+        headers = custom_headers if custom_headers else self.headers
+        self.response = requests.get(self.url, headers=headers)
         return self.response
 
     @allure.step('Check response structure')
@@ -52,8 +53,6 @@ class GetMemes(Endpoint):
 
     @allure.step('Get memes without token (expecting 401)')
     def get_memes_without_token_status_401(self):
-        headers_without_token = {key: value for key, value in self.headers.items() if key != 'Authorization'}
-        self.response = requests.get(self.url, headers=headers_without_token)
         assert self.response.status_code == 401, f"Expected 401, but got {self.response.status_code}"
 
     @allure.step('Get memes with invalid method (expecting 405)')

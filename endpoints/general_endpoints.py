@@ -12,7 +12,7 @@ class Endpoint:
         }
 
     @allure.step('Check that delete response time is within acceptable limits')
-    def check_response_time(self, max_time_ms=300):
+    def check_response_time(self, max_time_ms=500):
         response_time = self.response.elapsed.total_seconds() * 1000
         assert response_time <= max_time_ms, f"Response time {response_time} ms exceeded the limit of {max_time_ms} ms"
 

@@ -9,9 +9,9 @@ class DeleteMeme(Endpoint):
         super().__init__(token)
 
     @allure.step('Delete a new meme')
-    def delete(self, meme_id):
-        print(f"Using token : {self.headers['Authorization']}")
-        self.response = requests.delete(f"{self.url}/{meme_id}", headers=self.headers)
+    def delete(self, meme_id, custom_headers=None):
+        headers = custom_headers if custom_headers else self.headers
+        self.response = requests.delete(f"{self.url}/{meme_id}", headers=headers)
         return self.response
 
     @allure.step('Check successful deletion message')
@@ -20,22 +20,13 @@ class DeleteMeme(Endpoint):
         actual_message = self.response.text
         assert actual_message == expected_message, f"Unexpected message: {actual_message}, expected: {expected_message}"
 
-    @allure.step('Check status is 404 for already deleted meme')
-    def check_status_404(self, meme_id):
-        response_404 = requests.delete(f"{self.url}/{meme_id}", headers=self.headers)
-        assert response_404.status_code == 404, f"Expected 404, but got {response_404.status_code}"
-
     @allure.step('Check status is 401 without token')
-    def check_status_401_without_token(self, meme_id):
-        response_401 = requests.delete(f"{self.url}/{meme_id}")
-        assert response_401.status_code == 401, f"Expected 401, but got {response_401.status_code}"
+    def check_status_401_without_token(self):
+        assert self.response.status_code == 401, f"Expected 401, but got {self.response.status_code}"
 
     @allure.step('Check status is 403 when deleting meme with another users token')
-    def check_status_403_with_another_user_token(self, meme_id, other_token):
-        print(f"Attempting to delete meme with id: {meme_id} using another user's token: {other_token}")
-        headers_with_other_token = {'Authorization': other_token}
-        response_403 = requests.delete(f"{self.url}/{meme_id}", headers=headers_with_other_token)
-        assert response_403.status_code == 403, f"Expected 403, but got {response_403.status_code}"
+    def check_status_403_with_another_user_token(self):
+        assert self.response.status_code == 403, f"Expected 403, but got {self.response.status_code}"
 
     @allure.step('Check status is 400 for invalid meme ID')
     def check_status_400_invalid_id(self, invalid_meme_id):
@@ -48,3 +39,8 @@ class DeleteMeme(Endpoint):
     def check_status_405_invalid_method(self, meme_id):
         response_405 = requests.post(f"{self.url}/{meme_id}", headers=self.headers)
         assert response_405.status_code == 405, f"Expected 405, but got {response_405.status_code}"
+
+    @allure.step('Check status is 404 for already deleted meme')
+    def check_status_404(self, meme_id):
+        response_404 = requests.delete(f"{self.url}/{meme_id}", headers=self.headers)
+        assert response_404.status_code == 404, f"Expected 404, but got {response_404.status_code}"
