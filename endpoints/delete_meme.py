@@ -24,7 +24,11 @@ class DeleteMeme(Endpoint):
     def check_status_403_with_another_user_token(self):
         assert self.response.status_code == 403, f"Expected 403, but got {self.response.status_code}"
 
-    @allure.step('Check status is 405 for invalid method')
-    def check_status_405_invalid_method(self, meme_id):
-        response_405 = requests.post(f"{self.url}/{meme_id}", headers=self.headers)
-        assert response_405.status_code == 405, f"Expected 405, but got {response_405.status_code}"
+    @allure.step('Send request using an invalid method')
+    def send_post_method_request_in_delete(self, meme_id):
+        return requests.post(f"{self.url}/{meme_id}", headers=self.headers)
+
+    @allure.step('Check status 404 for attempting to delete already deleted meme')
+    def check_status_404_for_confirm_deleted_meme(self):
+        assert self.response.status_code == 404, (f"Expected 404 for already deleted meme, "
+                                                  f"but got {self.response.status_code}")

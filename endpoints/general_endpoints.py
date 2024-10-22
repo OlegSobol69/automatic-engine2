@@ -31,6 +31,10 @@ class Endpoint:
     def check_status_404(self):
         assert self.response.status_code == 404, f"Expected 404, but got {self.response.status_code}"
 
+    @allure.step('Check response status code for 405 (Method Not Allowed)')
+    def check_status_405(self, response):
+        assert response.status_code == 405, f"Expected 405, but got {response.status_code}"
+
     @allure.step('Check response is not empty')
     def check_response_is_not_empty(self):
         assert self.response.content, "Response content is empty"
@@ -50,3 +54,30 @@ class Endpoint:
         assert isinstance(response_data['url'], str), "Field 'url' should be of type string"
         assert isinstance(response_data['tags'], list), "Field 'tags' should be of type array (list)"
         assert isinstance(response_data['info'], dict), "Field 'info' should be of type object"
+
+    @allure.step('Check all meme fields')
+    def check_valid_fields(self, expected_text, expected_url, expected_tags, expected_info, expected_user):
+        response_data = self.response.json()
+
+        assert response_data[
+                   "text"] == expected_text, (f"Text mismatch: expected '{expected_text}', "
+                                              f"got '{response_data['text']}'")
+        assert response_data[
+                   "url"] == expected_url, (f"URL mismatch: expected '{expected_url}', "
+                                            f"got '{response_data['url']}'")
+        assert response_data[
+                   "tags"] == expected_tags, (f"Tags mismatch: expected '{expected_tags}', "
+                                              f"got '{response_data['tags']}'")
+
+        actual_info = response_data.get("info", {})
+        for key, expected_value in expected_info.items():
+            actual_value = actual_info.get(key)
+            assert actual_value == expected_value, (f"Mismatch in info field '{key}': expected '{expected_value}', "
+                                                    f"got '{actual_value}'")
+
+        unexpected_keys = set(actual_info.keys()) - set(expected_info.keys())
+        assert not unexpected_keys, f"Unexpected keys in info field: {unexpected_keys}"
+
+        assert response_data[
+                   "updated_by"] == expected_user, (f"Updated_by mismatch: expected '{expected_user}', "
+                                                    f"got '{response_data['updated_by']}'")

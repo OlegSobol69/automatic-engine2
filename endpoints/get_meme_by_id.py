@@ -23,6 +23,5 @@ class GetMemeById(Endpoint):
                ] == requested_meme_id, f"Expected meme ID '{requested_meme_id}', but got '{response_data['id']}'"
 
     @allure.step('Check status code is 405 (Method Not Allowed)')
-    def check_status_405(self, meme_id):
-        response_405 = requests.post(f"{self.url}/{meme_id}", headers=self.headers)
-        assert response_405.status_code == 405, f"Expected 405, but got {response_405.status_code}"
+    def send_patch_method_request_in_get_meme_by_id(self, meme_id):
+        return requests.patch(f"{self.url}/{meme_id}", headers=self.headers)

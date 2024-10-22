@@ -16,10 +16,10 @@ class UpdateMeme(Endpoint):
         return self.response
 
     @allure.step('Get memes with invalid method (expecting 405)')
-    def put_memes_with_invalid_method_status_405(self, meme_id):
-        self.response = requests.post(f"{self.url}/{meme_id}", headers=self.headers)
-        assert self.response.status_code == 405, f"Expected 405, but got {self.response.status_code}"
+    def send_post_method_request_in_update(self, meme_id):
+        return requests.post(f"{self.url}/{meme_id}", headers=self.headers)
 
     @allure.step('Check status is 403 when deleting meme with another users token')
     def check_status_403_with_another_user_token(self):
         assert self.response.status_code == 403, f"Expected 403, but got {self.response.status_code}"
+

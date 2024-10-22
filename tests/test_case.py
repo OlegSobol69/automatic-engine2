@@ -4,8 +4,8 @@ import pytest
 TEST_DATA = [
     {"text": "Это пример текста 1", "url": "https://example.com/1", "tags": ["пример1", "json1", "данные1"],
      "info": {"author": "Иван Иванов1", "date": "2024-10-01", "views": 100}},
-    {"text": "Это  пример текста2", "url": "https://example.com/2", "tags": ["пример2", "json2", "обновление2"],
-     "info": {"author": "Пётр Петров2", "date": "2024-10-02", "views": 200}}
+    {"text": "Это  пример текста2", "url": "https://example.com/2", "tags": ["пример2", "обновление2"],
+     "info": {"author": "Пётр Петров2", "views": 200}}
 ]
 
 NEGATIVE_DATA = [
@@ -26,15 +26,15 @@ INVALID_UPDATE_BODIES = [
 
 VALID_UPDATE_BODIES = [
     {"id": None, "text": "Обновленный текст мемa.", "url": "https://updated-example.com",
-     "tags": ["тест", "апдейт"], "info": {"author": "Иван Иванов", "date": "2024-10-18", "views": 200}},
+     "tags": ["тест", "апдейт"], "info": {"director": "Иван Иванов", "message": "allowed"}},
     {"id": None, "text": "Другой обновленный текст.", "url": "https://another-example.com",
-     "tags": ["пример", "json"], "info": {"author": "Мария Смирнова", "date": "2024-10-17", "views": 150}}
+     "tags": ["пример", "json"], "info": {"author": "Мария Смирнова", "views": 150}}
 ]
 
 
 @pytest.mark.parametrize('body', TEST_DATA)
 @allure.feature('Create Meme')
-def test_create_meme(create_meme_endpoint, body, del_meme, request):
+def test_create_meme_check_valid_data(create_meme_endpoint, body, del_meme, request):
     create_meme_endpoint.create(body, request=request)
     create_meme_endpoint.check_response_time()
     create_meme_endpoint.check_response_is_not_empty()
@@ -44,6 +44,14 @@ def test_create_meme(create_meme_endpoint, body, del_meme, request):
     create_meme_endpoint.check_field_types()
     create_meme_endpoint.check_url_format()
     create_meme_endpoint.check_response_has_mandatory_fields()
+
+    create_meme_endpoint.check_valid_fields(
+        expected_text=body["text"],
+        expected_url=body["url"],
+        expected_tags=body["tags"],
+        expected_info=body["info"],
+        expected_user="user_1"
+    )
 
 
 @pytest.mark.parametrize('body', TEST_DATA)
@@ -69,17 +77,22 @@ def test_delete_meme(meme_id, delete_meme_endpoint):
     delete_meme_endpoint.delete(meme_id)
     delete_meme_endpoint.check_response_time()
     delete_meme_endpoint.check_status_200()
+
     delete_meme_endpoint.check_successful_deletion_message(meme_id)
+    delete_meme_endpoint.delete(meme_id)
+    delete_meme_endpoint.check_status_404_for_confirm_deleted_meme()
 
 
-@allure.feature('Delete Meme check status code')
-def test_delete_check_invalid_request(delete_meme_endpoint):
+@allure.feature('Delete Meme check status code 405 Method Not Allowed')
+def test_delete_invalid_method(delete_meme_endpoint, meme_id):
+    response = delete_meme_endpoint.send_post_method_request_in_delete(meme_id)
+    delete_meme_endpoint.check_status_405(response)
 
-    delete_meme_endpoint.check_status_405_invalid_method(meme_id=456)
 
+@allure.feature('Delete Meme check status code 404 and 400')
+def test_delete_nonexistent_and_invalid_id_responses(delete_meme_endpoint):
     delete_meme_endpoint.delete(meme_id=0)
     delete_meme_endpoint.check_status_404()
-
     delete_meme_endpoint.delete(meme_id="invalid")
     delete_meme_endpoint.check_status_400_bad_request()
 
@@ -109,12 +122,16 @@ def test_get_meme_by_id(meme_id, get_meme_by_id_endpoint):
     get_meme_by_id_endpoint.check_meme_id_matches(meme_id)
 
 
-@allure.feature('Get meme by id check status code')
-def test_get_meme_by_id_check_status_code(meme_id, get_meme_by_id_endpoint):
+@allure.feature('Get Meme by ID - Not Found Response')
+def test_get_meme_by_id_not_found(get_meme_by_id_endpoint):
     get_meme_by_id_endpoint.get_meme_by_id(meme_id=0)
     get_meme_by_id_endpoint.check_status_404()
 
-    get_meme_by_id_endpoint.check_status_405(meme_id)
+
+@allure.feature('Get Meme by ID check status code 405 Method Not Allowed')
+def test_get_meme_by_id_invalid_method(get_meme_by_id_endpoint, meme_id):
+    response = get_meme_by_id_endpoint.send_patch_method_request_in_get_meme_by_id(meme_id)
+    get_meme_by_id_endpoint.check_status_405(response)
 
 
 @allure.feature('Get meme by id without token')
@@ -146,34 +163,39 @@ def test_get_memes_without_token(get_memes_endpoint):
     get_memes_endpoint.check_status_401_without_token()
 
 
-@allure.feature('Get all memes check status code 405')
-def test_get_memes_check_status_405(get_memes_endpoint):
-    get_memes_endpoint.get_memes_with_invalid_method_status_405()
+@allure.feature('Get all memes check status code 405 Method Not Allowed')
+def test_get_memes_invalid_method(get_memes_endpoint):
+    response = get_memes_endpoint.send_put_method_request_in_get_memes()
+    get_memes_endpoint.check_status_405(response)
 
 
 @pytest.mark.parametrize('body', VALID_UPDATE_BODIES)
 @allure.feature('Update Meme')
-def test_update_meme(update_meme_endpoint, meme_id, body):
+def test_update_meme_check_valid_data(update_meme_endpoint, meme_id, body):
     update_meme_endpoint.update(meme_id, body)
     update_meme_endpoint.check_response_time()
     update_meme_endpoint.check_response_is_not_empty()
     update_meme_endpoint.check_status_200()
     update_meme_endpoint.check_field_types()
 
+    update_meme_endpoint.check_valid_fields(
+        expected_text=body["text"],
+        expected_url=body["url"],
+        expected_tags=body["tags"],
+        expected_info=body["info"],
+        expected_user="user_1"
+    )
 
-@allure.feature('Update Meme check error status')
-def test_update_meme_check_status_405(update_meme_endpoint, meme_id):
-    update_meme_endpoint.put_memes_with_invalid_method_status_405(meme_id)
+
+@allure.feature('Update Meme check status code 405 Method Not Allowed')
+def test_update_meme_invalid_method(update_meme_endpoint, meme_id):
+    response = update_meme_endpoint.send_post_method_request_in_update(meme_id)
+    update_meme_endpoint.check_status_405(response)
 
 
 @pytest.mark.parametrize("body", [
-    {
-        "id": 0,
-        "text": "Попытка обновления",
-        "url": "https://example.com",
-        "tags": ["error"],
-        "info": {"author": "Иван Иванов", "date": "2024-10-01"}
-    }
+    {"id": 0, "text": "обновление 1", "url": "https://example.com", "tags": [], "info": {}},
+    {"id": 999999, "text": "обновления 2", "url": "https://example.com", "tags": [], "info": {}}
 ])
 @allure.feature('Update non-existent meme')
 def test_update_non_existent_meme_status_404(update_meme_endpoint, body):

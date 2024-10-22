@@ -51,7 +51,6 @@ class GetMemes(Endpoint):
         meme_ids = [int(meme['id']) for meme in response_data['data']]
         assert meme_ids == sorted(meme_ids), "Memes are not sorted by id"
 
-    @allure.step('Get memes with invalid method (expecting 405)')
-    def get_memes_with_invalid_method_status_405(self):
-        self.response = requests.put(self.url, headers=self.headers)
-        assert self.response.status_code == 405, f"Expected 405, but got {self.response.status_code}"
+    @allure.step('Send GET request using an invalid method PUT')
+    def send_put_method_request_in_get_memes(self):
+        return requests.put(self.url, headers=self.headers)
